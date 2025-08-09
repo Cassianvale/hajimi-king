@@ -62,6 +62,10 @@ class Config:
     FILE_PATH_BLACKLIST_STR = os.getenv("FILE_PATH_BLACKLIST", "readme,docs,doc/,.md,sample,tutorial")
     FILE_PATH_BLACKLIST = [token.strip().lower() for token in FILE_PATH_BLACKLIST_STR.split(',') if token.strip()]
 
+    # 简易登录认证配置
+    AUTH_USER = os.getenv("AUTH_USER", "")
+    AUTH_PASSWORD = os.getenv("AUTH_PASSWORD", "")
+
     @classmethod
     def parse_bool(cls, value: str) -> bool:
         """

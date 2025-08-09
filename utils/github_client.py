@@ -215,3 +215,5 @@ class GitHubClient:
     @staticmethod
     def create_instance(tokens: List[str]) -> 'GitHubClient':
         return GitHubClient(tokens)
+
+

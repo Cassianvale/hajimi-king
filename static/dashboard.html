@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Hajimi King</title>
+  <!-- Tailwind CSS (Play CDN) - 纯静态，无需构建，可直接在 HTML 使用类名 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Ant Design（UMD + CSS，通过 CDN 在纯静态页面中使用 React 版 AntD） -->
+  <link rel="stylesheet" href="https://unpkg.com/antd@5/dist/reset.css" />
+  <link rel="stylesheet" href="https://unpkg.com/antd@5/dist/antd.min.css" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #0b1020; color: #e6e8ee; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; background: #121831; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .brand { font-weight: 800; letter-spacing: .5px; }
+    .container { padding: 22px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .card { background:#121831; border:1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 16px; }
+    .muted { color: #9aa3ba; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Hajimi King Dashboard</div>
+    <nav class="muted">Demo</nav>
+  </header>
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <h3>System Status</h3>
+        <p class="muted">All services operational.</p>
+      </div>
+      <div class="card">
+        <h3>Recent Activity</h3>
+        <p class="muted">No recent actions.</p>
+      </div>
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <button disabled>Run Scan (demo)</button>
+      </div>
+    </div>
+
+    <!-- Tailwind 示例（纯静态样式，无需构建） -->
+    <div class="mt-6 p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur sm:flex sm:items-center sm:justify-between">
+      <div>
+        <div class="text-lg font-semibold">Tailwind Active</div>
+        <p class="text-sm text-slate-300">This block is styled using Tailwind via Play CDN.</p>
+      </div>
+      <a href="/" class="inline-flex items-center gap-2 mt-3 sm:mt-0 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-medium">Back to Home</a>
+    </div>
+
+    <!-- Ant Design（CDN UMD）示例：纯静态，无需构建，但需要 React 在浏览器运行 -->
+    <div class="mt-6 p-4 rounded-xl border border-white/10 bg-white/5">
+      <div class="text-lg font-semibold mb-3">Ant Design (via CDN)</div>
+      <div id="antd-root"></div>
+      <script>
+        (function () {
+          const { createElement: h, useState } = React;
+          const { createRoot } = ReactDOM;
+          const { Button, ConfigProvider, App: AntdApp } = antd;
+
+          function AntdDemo() {
+            const [count, setCount] = React.useState(0);
+            return h('div', { className: 'space-y-3' },
+              h('div', { className: 'text-sm text-slate-300' }, `Clicked ${count} times`),
+              h(Button, { type: 'primary', onClick: () => setCount(count + 1) }, 'AntD Button')
+            );
+          }
+
+          const root = createRoot(document.getElementById('antd-root'));
+          root.render(
+            h(ConfigProvider, null,
+              h(AntdApp, null, h(AntdDemo))
+            )
+          );
+        })();
+      </script>
+      <p class="mt-3 text-sm text-slate-400">说明：此方式完全基于 HTML/JS/CSS + CDN，无需构建；但页面体积较大，适合小型 Demo。</p>
+    </div>
+  </div>
+</body>
+</html>
+
+

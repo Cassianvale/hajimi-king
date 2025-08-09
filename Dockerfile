@@ -23,4 +23,4 @@ RUN pip install uv
 RUN uv pip install --system --no-cache -r pyproject.toml
 
 # 启动命令
-CMD ["python", "app/hajimi_king.py"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

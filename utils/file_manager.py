@@ -59,7 +59,7 @@ class FileManager:
         Args:
             data_dir: 数据目录路径
         """
-        logger.info("🔧 Initializing FileManager")
+        logger.info("🔧 正在初始化文件管理器")
 
         # 1. 基础路径设置
         self.data_dir = data_dir
@@ -77,16 +77,16 @@ class FileManager:
         # 3. 创建数据目录
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir, exist_ok=True)
-            logger.info(f"Created data directory: {self.data_dir}")
+            logger.info(f"已创建数据目录: {self.data_dir}")
         else:
-            logger.info(f"Data directory exists: {self.data_dir}")
+            logger.info(f"数据目录已存在: {self.data_dir}")
 
         # 4. 加载搜索查询
         try:
             self._search_queries = self.load_search_queries(Config.QUERIES_FILE)
-            logger.info(f"✅ Loaded {len(self._search_queries)} search queries")
+            logger.info(f"✅ 已加载 {len(self._search_queries)} 个搜索查询")
         except Exception as e:
-            logger.error(f"❌ Failed to load search queries: {e}")
+            logger.error(f"❌ 加载搜索查询失败: {e}")
             self._search_queries = []
 
         # 5. 初始化文件名
@@ -131,14 +131,14 @@ class FileManager:
                 with open(filename, 'a', encoding='utf-8') as f:
                     f.write("")
 
-        logger.info(f"Initialized keys valid filename: {self._keys_valid_filename}")
-        logger.info(f"Initialized rate limited filename: {self._rate_limited_filename}")
-        logger.info(f"Initialized keys send filename: {self._keys_send_filename}")
-        logger.info(f"Initialized detail log filename: {self._detail_log_filename}")
-        logger.info(f"Initialized rate limited detail filename: {self._rate_limited_detail_filename}")
-        logger.info(f"Initialized keys send detail filename: {self._keys_send_detail_filename}")
+        logger.info(f"已初始化有效密钥文件名: {self._keys_valid_filename}")
+        logger.info(f"已初始化速率受限文件名: {self._rate_limited_filename}")
+        logger.info(f"已初始化密钥发送文件名: {self._keys_send_filename}")
+        logger.info(f"已初始化详细日志文件名: {self._detail_log_filename}")
+        logger.info(f"已初始化速率受限详细文件名: {self._rate_limited_detail_filename}")
+        logger.info(f"已初始化密钥发送详细文件名: {self._keys_send_detail_filename}")
 
-        logger.info("✅ FileManager initialization complete")
+        logger.info("✅ 文件管理器初始化完成")
 
     def check(self) -> bool:
         """
@@ -147,24 +147,24 @@ class FileManager:
         Returns:
             bool: 检查是否通过
         """
-        logger.info("🔍 Checking FileManager status...")
+        logger.info("🔍 正在检查文件管理器状态...")
 
         errors = []
 
         # 检查搜索查询
         if not hasattr(self, '_search_queries') or not self._search_queries:
-            errors.append("Search queries not loaded or empty")
-            logger.error("❌ Search queries: Not loaded or empty")
+            errors.append("搜索查询未加载或为空")
+            logger.error("❌ 搜索查询: 未加载或为空")
         else:
-            logger.info(f"✅ Search queries: {len(self._search_queries)} loaded")
+            logger.info(f"✅ 搜索查询: 已加载 {len(self._search_queries)} 个")
 
         if errors:
-            logger.error("❌ FileManager check failed:")
+            logger.error("❌ 文件管理器检查失败:")
             for error in errors:
                 logger.error(f"   - {error}")
             return False
 
-        logger.info("✅ FileManager status check passed")
+        logger.info("✅ 文件管理器状态检查通过")
         return True
 
     # ================================
@@ -181,9 +181,9 @@ class FileManager:
                     data = json.load(f)
                     checkpoint = Checkpoint.from_dict(data)
             except Exception as e:
-                logger.warning(f"Cannot read {self.checkpoint_file}: {e}. Will create new checkpoint.")
+                logger.warning(f"无法读取 {self.checkpoint_file}: {e}. 将创建新的检查点.")
         else:
-            logger.warning(f"{self.checkpoint_file} not found. Will create new checkpoint.")
+            logger.warning(f"未找到 {self.checkpoint_file}. 将创建新的检查点.")
             self.save_checkpoint(checkpoint)
 
         # 从单独文件加载scanned_shas
@@ -203,11 +203,11 @@ class FileManager:
                         if line and not line.startswith('#'):
                             scanned_shas.add(line)
             except Exception as e:
-                logger.error(f"Failed to read {self.scanned_shas_file}: {e}")
+                logger.error(f"读取 {self.scanned_shas_file} 失败: {e}")
                 traceback.print_exc()
         else:
-            logger.info(f"Scanned SHAs file not found: {self.scanned_shas_file}")
-            logger.info("load  empty scanned SHAs set")
+            logger.info(f"未找到已扫描SHA文件: {self.scanned_shas_file}")
+            logger.info("加载空的已扫描SHA集合")
 
         return scanned_shas
 
@@ -226,8 +226,8 @@ class FileManager:
                     if line and not line.startswith('#'):
                         queries.append(line)
         except Exception as e:
-            logger.error(f"Failed to read {full_path}: {e}")
-            logger.info("Using empty query list")
+            logger.error(f"读取 {full_path} 失败: {e}")
+            logger.info("使用空的查询列表")
 
         return queries
 
@@ -245,7 +245,7 @@ class FileManager:
                 json.dump(checkpoint.to_dict(), f, ensure_ascii=False, indent=2)
             checkpoint = self.load_checkpoint()
         except Exception as e:
-            logger.error(f"Failed to save {self.checkpoint_file}: {e}")
+            logger.error(f"保存 {self.checkpoint_file} 失败: {e}")
 
     def save_scanned_shas(self, scanned_shas: Set[str]) -> None:
         """保存已扫描的SHA列表到文件"""
@@ -258,7 +258,7 @@ class FileManager:
                 for sha in sorted(scanned_shas):
                     f.write(f"{sha}\n")
         except Exception as e:
-            logger.error(f"Failed to save scanned SHAs to {self.scanned_shas_file}: {e}")
+            logger.error(f"保存已扫描SHA到 {self.scanned_shas_file} 失败: {e}")
 
     def save_valid_keys(self, repo_name: str, file_path: str, file_url: str, valid_keys: List[str]) -> None:
         """保存有效的API密钥"""
@@ -337,7 +337,7 @@ class FileManager:
             with open(self.scanned_shas_file, "a", encoding="utf-8") as f:
                 f.write(f"{sha}\n")
         except Exception as e:
-            logger.error(f"Failed to append SHA {sha} to {self.scanned_shas_file}: {e}")
+            logger.error(f"追加SHA {sha} 到 {self.scanned_shas_file} 失败: {e}")
 
     # ================================
     # 更新方法
@@ -461,9 +461,9 @@ class FileManager:
                 f.write("AIzaSy in:file\n")
                 f.write("AIzaSy in:file filename:.env\n")
                 f.write("AIzaSy in:file filename:env.example\n")
-            logger.info(f"Created default queries file: {queries_file}")
+            logger.info(f"已创建默认查询文件: {queries_file}")
         except Exception as e:
-            logger.error(f"Failed to create default queries file {queries_file}: {e}")
+            logger.error(f"创建默认查询文件 {queries_file} 失败: {e}")
 
     def _need_filename_update(self, basename: str, prefix: str, current_date: str, current_hour: str) -> bool:
         """检查是否需要更新文件名"""

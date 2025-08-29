@@ -113,70 +113,70 @@ class Config:
         Returns:
             bool: 配置是否完整
         """
-        logger.info("🔍 Checking required configurations...")
+        logger.info("🔍 正在检查必要配置...")
         
         errors = []
         
         # 检查GitHub tokens
         if not cls.GITHUB_TOKENS:
-            errors.append("GitHub tokens not found. Please set GITHUB_TOKENS environment variable.")
-            logger.error("❌ GitHub tokens: Missing")
+            errors.append("未找到 GitHub 令牌。请设置 GITHUB_TOKENS 环境变量。")
+            logger.error("❌ GitHub 令牌: 缺失")
         else:
-            logger.info(f"✅ GitHub tokens: {len(cls.GITHUB_TOKENS)} configured")
+            logger.info(f"✅ GitHub 令牌: 已配置 {len(cls.GITHUB_TOKENS)} 个")
         
         # 检查Gemini Balancer配置
         if cls.GEMINI_BALANCER_SYNC_ENABLED:
-            logger.info(f"✅ Gemini Balancer enabled, URL: {cls.GEMINI_BALANCER_URL}")
+            logger.info(f"✅ Gemini Balancer 已启用，URL: {cls.GEMINI_BALANCER_URL}")
             if not cls.GEMINI_BALANCER_AUTH or not cls.GEMINI_BALANCER_URL:
-                logger.warning("⚠️ Gemini Balancer Auth or URL Missing (Balancer功能将被禁用)")
+                logger.warning("⚠️ Gemini Balancer 认证或 URL 缺失 (Balancer功能将被禁用)")
             else:
-                logger.info(f"✅ Gemini Balancer Auth: ****")
+                logger.info(f"✅ Gemini Balancer 认证: ****")
         else:
-            logger.info("ℹ️ Gemini Balancer URL: Not configured (Balancer功能将被禁用)")
+            logger.info("ℹ️ Gemini Balancer URL: 未配置 (Balancer功能将被禁用)")
 
         # 检查GPT Load Balancer配置
         if cls.parse_bool(cls.GPT_LOAD_SYNC_ENABLED):
-            logger.info(f"✅ GPT Load Balancer enabled, URL: {cls.GPT_LOAD_URL}")
+            logger.info(f"✅ GPT Load Balancer 已启用，URL: {cls.GPT_LOAD_URL}")
             if not cls.GPT_LOAD_AUTH or not cls.GPT_LOAD_URL or not cls.GPT_LOAD_GROUP_NAME:
-                logger.warning("⚠️ GPT Load Balancer Auth, URL or Group Name Missing (Load Balancer功能将被禁用)")
+                logger.warning("⚠️ GPT Load Balancer 认证、URL 或组名缺失 (Load Balancer功能将被禁用)")
             else:
-                logger.info(f"✅ GPT Load Balancer Auth: ****")
-                logger.info(f"✅ GPT Load Balancer Group Name: {cls.GPT_LOAD_GROUP_NAME}")
+                logger.info(f"✅ GPT Load Balancer 认证: ****")
+                logger.info(f"✅ GPT Load Balancer 组名: {cls.GPT_LOAD_GROUP_NAME}")
         else:
-            logger.info("ℹ️ GPT Load Balancer: Not configured (Load Balancer功能将被禁用)")
+            logger.info("ℹ️ GPT Load Balancer: 未配置 (Load Balancer功能将被禁用)")
 
         if errors:
-            logger.error("❌ Configuration check failed:")
-            logger.info("Please check your .env file and configuration.")
+            logger.error("❌ 配置检查失败:")
+            logger.info("请检查您的 .env 文件和配置。")
             return False
         
-        logger.info("✅ All required configurations are valid")
+        logger.info("✅ 所有必要配置均有效")
         return True
 
 
-logger.info(f"*" * 30 + " CONFIG START " + "*" * 30)
-logger.info(f"GITHUB_TOKENS: {len(Config.GITHUB_TOKENS)} tokens")
+logger.info(f"*" * 30 + " 配置开始 " + "*" * 30)
+logger.info(f"GITHUB_TOKENS: {len(Config.GITHUB_TOKENS)} 个令牌")
 logger.info(f"DATA_PATH: {Config.DATA_PATH}")
-logger.info(f"PROXY_LIST: {len(Config.PROXY_LIST)} proxies configured")
-logger.info(f"GEMINI_BALANCER_URL: {Config.GEMINI_BALANCER_URL or 'Not configured'}")
-logger.info(f"GEMINI_BALANCER_AUTH: {'Configured' if Config.GEMINI_BALANCER_AUTH else 'Not configured'}")
+logger.info(f"PROXY_LIST: 已配置 {len(Config.PROXY_LIST)} 个代理")
+logger.info(f"GEMINI_BALANCER_URL: {Config.GEMINI_BALANCER_URL or '未配置'}")
+logger.info(f"GEMINI_BALANCER_AUTH: {'已配置' if Config.GEMINI_BALANCER_AUTH else '未配置'}")
 logger.info(f"GEMINI_BALANCER_SYNC_ENABLED: {Config.parse_bool(Config.GEMINI_BALANCER_SYNC_ENABLED)}")
 logger.info(f"GPT_LOAD_SYNC_ENABLED: {Config.parse_bool(Config.GPT_LOAD_SYNC_ENABLED)}")
-logger.info(f"GPT_LOAD_URL: {Config.GPT_LOAD_URL or 'Not configured'}")
-logger.info(f"GPT_LOAD_AUTH: {'Configured' if Config.GPT_LOAD_AUTH else 'Not configured'}")
-logger.info(f"GPT_LOAD_GROUP_NAME: {Config.GPT_LOAD_GROUP_NAME or 'Not configured'}")
+logger.info(f"GPT_LOAD_URL: {Config.GPT_LOAD_URL or '未配置'}")
+logger.info(f"GPT_LOAD_AUTH: {'已配置' if Config.GPT_LOAD_AUTH else '未配置'}")
+logger.info(f"GPT_LOAD_GROUP_NAME: {Config.GPT_LOAD_GROUP_NAME or '未配置'}")
 logger.info(f"VALID_KEY_PREFIX: {Config.VALID_KEY_PREFIX}")
 logger.info(f"RATE_LIMITED_KEY_PREFIX: {Config.RATE_LIMITED_KEY_PREFIX}")
 logger.info(f"KEYS_SEND_PREFIX: {Config.KEYS_SEND_PREFIX}")
 logger.info(f"VALID_KEY_DETAIL_PREFIX: {Config.VALID_KEY_DETAIL_PREFIX}")
 logger.info(f"RATE_LIMITED_KEY_DETAIL_PREFIX: {Config.RATE_LIMITED_KEY_DETAIL_PREFIX}")
 logger.info(f"KEYS_SEND_DETAIL_PREFIX: {Config.KEYS_SEND_DETAIL_PREFIX}")
-logger.info(f"DATE_RANGE_DAYS: {Config.DATE_RANGE_DAYS} days")
+logger.info(f"DATE_RANGE_DAYS: {Config.DATE_RANGE_DAYS} 天")
 logger.info(f"QUERIES_FILE: {Config.QUERIES_FILE}")
 logger.info(f"SCANNED_SHAS_FILE: {Config.SCANNED_SHAS_FILE}")
 logger.info(f"HAJIMI_CHECK_MODEL: {Config.HAJIMI_CHECK_MODEL}")
-logger.info(f"FILE_PATH_BLACKLIST: {len(Config.FILE_PATH_BLACKLIST)} items")
-logger.info(f"*" * 30 + " CONFIG END " + "*" * 30)
+logger.info(f"FILE_PATH_BLACKLIST: {len(Config.FILE_PATH_BLACKLIST)} 个项目")
+logger.info(f"*" * 30 + " 配置结束 " + "*" * 30)
 
 # 创建全局配置实例
 config = Config()

